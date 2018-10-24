@@ -1,0 +1,77 @@
+1. k8s部署：彭中已部署好环境，其中redis和mysql连不上, 需百含和客户沟通    done
+2. 日志服务：已建好相应的logstore，log_services服务模块志华已给到我，今早会将这个部署上去    done
+3. odps: 已建好相应的表格   done
+4. 推荐系统部署：
+    已部署为本地版本，目前importer_hour,hot_rec_hour挂点均因为mysql连不上
+    测试顺序：
+        1. rec_sql_handler(*),rec_es_handler(done),rec_pv2odps_producer(done),rec_pv2odps_consumer(done),可并行测
+        2. data_receiver(done),rec_action_pipe(done),dx_iteminfo(done),dx_itemmysql(done),dx_tabledata(done),dx_useraction(done),dx_main(done),一起测(*全部都要通)
+        3. importer_day(*done), importer_hour(*done),item_realtime_sync(*done),可并行测
+        4. hot_rec_day(done), hot_rec_hour(done),data_collector(done),可并行测
+        5. item_rec,item_rec_nearline(done),user_model(done),user_rec_nearline(done),hot_rec_nearline(done),indexing(done),rec_user_index(done)可并行测
+        6. rec_import_pv_data(done),可并行测
+        7. rec_ctr_merge(done),可并行测
+        8. rec_effect_static(done),rec_feedback(done),可并行测
+        9. dashboard,可并行测
+        10. env_monitor(done),rec_online(done),可并行测
+        11. item表同步到odps
+
+接下来还需要测试的工作:
+    1、大数据平台（dashboard）
+    2、监控、报警（env_monitor微信）
+    3、mr和hiveql(item_rec,hot_rec,rec_effect_static,rec_feedback,rec_ctr_merge,rec_pv2odps)
+    4、删除文件(data_collector)
+
+未完成：dashboard,机器报警+容器报警
+
+
+
+
+data_receiver   4
+dx_iteminfo     4
+dx_itemmysql    4
+dx_tabledata    4
+dx_useraction   4
+
+item_rec_nearline   3
+user_rec_nearline   5
+hot_rec_nearline    3
+rec_online  10
+rec_pv2odps_consumer    4
+
+
+
+online(2):     16核     32G
+rec_online          0.5 500Mi
+
+nearline(8):   16核     32G
+data_collector  0.1 500Mi
+data_receiver   0.5 500Mi
+dx_iteminfo     0.5 500Mi
+dx_itemmysql    0.5 500Mi
+dx_tabledata    0.5 500Mi
+dx_useraction   0.5 500Mi
+dx_main         5 1Gi
+rec_es_handler  0.5 500Mi
+rec_sql_handler 0.5 500Mi
+rec_action_pipe 0.5 500Mi
+rec_pv2odps_producer    0.5 500Mi
+rec_pv2odps_consumer    1 1Gi
+item_realtime_sync      1 1Gi
+item_rec_nearline   0.5 500Mi
+user_rec_nearline   0.5 500Mi
+hot_rec_nearline    0.5 500Mi
+rec_online          0.5 500Mi
+kafka               0.5 3Gi
+es                  1 6Gi
+zk                  0.5 1Gi
+tagging             0.5 3Gi
+indexing            0.5 500Mi
+env_monitor         1 100Mi
+scribe_server       0.5 1Gi
+scribe_client       0.5 500Mi
+
+dashboard_html      0.5 200Mi
+website_admin       0.5 200Mi
+dashboard_backend2  0.5 200Mi
+total:  16.1    25.6G
