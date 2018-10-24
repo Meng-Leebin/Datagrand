@@ -1,0 +1,94 @@
+部署顺序:
+    ns   (设置命名空间)
+        1. ns.yaml
+    command
+        2. registry.sh  (和dockerhub建立信任, 拉取镜像)
+    sa   (设置dockerhub用户)
+        2. role.yaml    (设置dockerhub用户)
+        2. rolebinding.yaml    (设置开发人员)
+    configmap
+        2. mysql-init-data.yaml     (mysql初始化脚本)
+        2. recproduct-config-volume.yaml    (global_conf信息)
+        2. recproduct-test-sleep.yaml       (test测试镜像脚本)
+    storage
+        2. pv-rec-data.yaml     (离线数据存储卷,在测试推荐模块是需再测试是否能挂在成功)
+        2. pv-rec-log.yaml      (模块日志存储卷,在测试监控模块是需再测试是否能挂在成功)
+    svc     (该步骤所部的svc都需要再测试deployment时再测试连通性)
+        pe
+            2. es.yaml
+            2. kafka.yaml
+            2. mysql.yaml
+            2. redis.yaml
+            2. tagging.yaml
+            2. zk.yaml
+        rec
+            2. online.yaml
+        upload
+            2. data-receiver.yaml
+            2. scribe-client.yaml
+            2. scribe-server.yaml
+        web
+            2. dashboard-backend2.yaml
+            2. dashboard-html.yaml
+            2. website-admin.yaml
+    job
+        4. mysql-init.yaml
+    deployment
+        pe
+            3. es.yaml  (svc)
+            3. mysql.yaml   (svc)
+            3. redis.yaml   (svc)
+            3. tagging.yaml (svc)
+            3. zk.yaml      (svc)
+            4. kafka.yaml   (svc)
+        cron
+            12. sync-item-info.yaml  (|)
+            13. import-pv-data.yaml
+            13. data-report-stat.yaml   (|)
+            13. importer-day.yaml
+            13. importer-hour.yaml
+            14. hot-day.yaml
+            14. hot-hour.yaml
+            14. item.yaml
+            14. item_hour.yaml   (|)
+            14. user.yaml        (|)
+            14. user-dig.yaml    (|)
+            14. user-sim.yaml    (|)
+            14. user-model.yaml  (|)
+            14. ctr-merge.yaml
+            15. alg-stat.yaml    (|)
+            15. rec-user-index.yaml  (|)
+            16. effect-static.yaml
+            16. feedback.yaml
+        rec
+            3. test-sleep.yaml
+            3. env-monitor.yaml
+            7. sql-handler.yaml
+            7. es-handler.yaml
+            8. online.yaml  (svc,最后还要再测试下online)
+            9. action-pipe.yaml
+            9. rec-pv2odps-producer.yaml    (|)
+            10. rec-pv2odps-consumer.yaml    (|)
+            13. item-realtime-sync.yaml
+            14. hot-nearline.yaml
+            14. item-nearline.yaml
+            15. user-nearline.yaml
+        search
+            13. indexing.yaml
+        upload
+            7. scribe-server.yaml   (svc)
+            7. scribe-client.yaml   (svc)
+            10. data-collector.yaml
+            10. data-receiver.yaml  (svc)
+            10. dx-main.yaml
+            11. dx-iteminfo.yaml
+            11. dx-tabledata.yaml    (|)
+            11. dx-useraction.yaml   (|)
+            12. dx-itemmysql.yaml
+        web
+            5. website-admin.yaml       (svc)
+            5. dashboard-backend2.yaml  (svc)
+            6. dashboard-html.yaml      (svc)
+注:
+    1. |代表非必须模块
+    1. svc代表需测试svc的模块
